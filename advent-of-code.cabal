@@ -1,0 +1,20 @@
+name:                advent-of-code
+version:             0.1.0.0
+homepage:            https://github.com/githubuser/advent-of-code-2018#readme
+license:             BSD3
+license-file:        LICENSE
+author:              Andrew MacMurray
+maintainer:          a.macmurray@icloud.com
+copyright:           2018 Andrew MacMurray
+category:            Web
+build-type:          Simple
+cabal-version:       >=1.10
+extra-source-files:  README.md
+
+executable advent-of-code
+  hs-source-dirs:      src
+  main-is:             Main.hs
+  other-modules:       Day1
+  default-language:    Haskell2010
+  build-depends:       base >= 4.7 && < 5
+                     , bytestring
