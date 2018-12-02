@@ -10,17 +10,16 @@ solution1 :: IO Int
 solution1 = sum <$> frequencies
 
 solution2 :: IO Int
-solution2 = findDuplicate S.empty 0 . cycle <$> frequencies
+solution2 = firstDuplicate S.empty 0 . cycle <$> frequencies
 
-findDuplicate :: S.Set Int -> Int -> [Int] -> Int
-findDuplicate seen current (x:xs) =
-  if appearsTwice
+firstDuplicate :: S.Set Int -> Int -> [Int] -> Int
+firstDuplicate seen current (x:xs) =
+  if duplicate
     then frequency
-    else findDuplicate frequencies frequency xs
+    else firstDuplicate (frequency `S.insert` seen) frequency xs
   where
     frequency = current + x
-    appearsTwice = S.member frequency seen
-    frequencies = S.insert frequency seen
+    duplicate = frequency `S.member` seen
 
 frequencies :: IO [Int]
 frequencies = fmap frequency <$> fromFile "resources/day-1-frequency.txt"

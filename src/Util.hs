@@ -8,3 +8,6 @@ fromFile name = lines <$> readFile name
 
 nonEmpty :: Foldable f => f a -> Bool
 nonEmpty = not . null
+
+indexed :: [a] -> [(Int, a)]
+indexed = zip [0 ..]

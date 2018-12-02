@@ -1,8 +1,12 @@
-module Day2 where
+module Day2
+  ( solution1
+  , solution2
+  ) where
 
-import qualified Data.Map as M
-import qualified Data.Set as S
-import           Util     (fromFile, nonEmpty)
+import           Data.Foldable (foldl')
+import qualified Data.Map      as M
+import qualified Data.Set      as S
+import           Util          (fromFile, indexed, nonEmpty)
 
 -- Solution 2
 type LetterPositions = M.Map Int Char
@@ -13,10 +17,11 @@ solution2 = findLetterDifference <$> boxIds
 findLetterDifference :: [String] -> String
 findLetterDifference ids = M.elems $ foldr nonEmpties mempty allPositions
   where
-    allPositions = map letterPositions ids
-    nonEmpties positions acc
+    allPositions = map positions ids
+    positions = M.fromList . indexed
+    nonEmpties letters acc
       | nonEmpty acc = acc
-      | otherwise = getSames positions allPositions
+      | otherwise = getSames letters allPositions
 
 getSames :: LetterPositions -> [LetterPositions] -> LetterPositions
 getSames boxId = foldr (collectSame boxId) mempty
@@ -33,9 +38,6 @@ sameLetters = M.differenceWith checkForSame
       | a == b = Just a
       | otherwise = Nothing
 
-letterPositions :: String -> LetterPositions
-letterPositions = M.fromList . zip [0 ..]
-
 -- Solution 1
 solution1 :: IO Int
 solution1 = checksum <$> boxIds
@@ -46,7 +48,7 @@ checksum = product . M.elems . totalCount . map letterCount
 totalCount :: [S.Set Int] -> M.Map Int Int
 totalCount = collectLetterCounts mempty
   where
-    collectLetterCounts = foldl $ foldr accum
+    collectLetterCounts = foldl' $ foldr accum
     accum count = M.insertWith (+) count 1
 
 letterCount :: String -> S.Set Int
