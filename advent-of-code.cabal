@@ -17,4 +17,4 @@ executable advent-of-code
   other-modules:       Day1
   default-language:    Haskell2010
   build-depends:       base >= 4.7 && < 5
-                     , bytestring
+                     , containers
