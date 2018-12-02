@@ -1,27 +1,59 @@
 module Day2 where
 
-import           Data.List (lines)
-import qualified Data.Map  as Map
-import qualified Data.Set  as Set
-import           System.IO (readFile)
+import qualified Data.Map as M
+import qualified Data.Set as S
+import           Util     (fromFile, nonEmpty)
 
+-- Solution 2
+type LetterPositions = M.Map Int Char
+
+solution2 :: IO String
+solution2 = findLetterDifference <$> boxIds
+
+findLetterDifference :: [String] -> String
+findLetterDifference ids = M.elems $ foldr nonEmpties mempty allPositions
+  where
+    allPositions = map letterPositions ids
+    nonEmpties positions acc
+      | nonEmpty acc = acc
+      | otherwise = getSames positions allPositions
+
+getSames :: LetterPositions -> [LetterPositions] -> LetterPositions
+getSames boxId = foldr (collectSame boxId) mempty
+  where
+    collectSame idA idB acc
+      | nonEmpty acc = acc
+      | M.size (sameLetters idA idB) == M.size idA - 1 = sameLetters idA idB
+      | otherwise = mempty
+
+sameLetters :: LetterPositions -> LetterPositions -> LetterPositions
+sameLetters = M.differenceWith checkForSame
+  where
+    checkForSame a b
+      | a == b = Just a
+      | otherwise = Nothing
+
+letterPositions :: String -> LetterPositions
+letterPositions = M.fromList . zip [0 ..]
+
+-- Solution 1
 solution1 :: IO Int
-solution1 = checksum <$> fromFile
+solution1 = checksum <$> boxIds
 
 checksum :: [String] -> Int
-checksum = product . Map.elems . totalCount . map letterCount
+checksum = product . M.elems . totalCount . map letterCount
 
-totalCount :: [Set.Set Int] -> Map.Map Int Int
+totalCount :: [S.Set Int] -> M.Map Int Int
 totalCount = collectLetterCounts mempty
   where
     collectLetterCounts = foldl $ foldr accum
-    accum count = Map.insertWith (+) count 1
+    accum count = M.insertWith (+) count 1
 
-letterCount :: String -> Set.Set Int
+letterCount :: String -> S.Set Int
 letterCount = countsAbove1 . foldr accum mempty
   where
-    countsAbove1 = Set.filter (> 1) . Set.fromList . Map.elems
-    accum letter = Map.insertWith (+) letter 1
+    countsAbove1 = S.filter (> 1) . S.fromList . M.elems
+    accum letter = M.insertWith (+) letter 1
 
-fromFile :: IO [String]
-fromFile = lines <$> readFile "resources/day2-box-ids.txt"
+boxIds :: IO [String]
+boxIds = fromFile "resources/day2-box-ids.txt"

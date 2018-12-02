@@ -3,31 +3,27 @@ module Day1
   , solution2
   ) where
 
-import           Data.List (lines)
-import qualified Data.Set  as Set
-import           System.IO (readFile)
+import qualified Data.Set as S
+import           Util     (fromFile)
 
 solution1 :: IO Int
 solution1 = sum <$> frequencies
 
 solution2 :: IO Int
-solution2 = findDuplicate Set.empty 0 . cycle <$> frequencies
+solution2 = findDuplicate S.empty 0 . cycle <$> frequencies
 
-findDuplicate :: Set.Set Int -> Int -> [Int] -> Int
+findDuplicate :: S.Set Int -> Int -> [Int] -> Int
 findDuplicate seen current (x:xs) =
   if appearsTwice
     then frequency
     else findDuplicate frequencies frequency xs
   where
     frequency = current + x
-    appearsTwice = Set.member frequency seen
-    frequencies = Set.insert frequency seen
+    appearsTwice = S.member frequency seen
+    frequencies = S.insert frequency seen
 
 frequencies :: IO [Int]
-frequencies = fmap frequency . lines <$> fromFile
+frequencies = fmap frequency <$> fromFile "resources/day-1-frequency.txt"
   where
     frequency ('+':n) = read n
     frequency n       = read n
-
-fromFile :: IO String
-fromFile = readFile "resources/day-1-frequency.txt"
