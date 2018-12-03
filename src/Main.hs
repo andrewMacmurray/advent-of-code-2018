@@ -1,7 +1,8 @@
 module Main where
 
-import qualified Day2
-import qualified Day1
+import qualified Days.One
+import qualified Days.Three
+import qualified Days.Two
 
 main :: IO ()
-main = Day2.solution2 >>= print
+main = Days.Three.solution1 >>= print

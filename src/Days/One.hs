@@ -1,4 +1,4 @@
-module Day1
+module Days.One
   ( solution1
   , solution2
   ) where

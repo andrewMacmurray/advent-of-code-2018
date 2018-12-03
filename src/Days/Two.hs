@@ -1,4 +1,4 @@
-module Day2
+module Days.Two
   ( solution1
   , solution2
   ) where
@@ -58,4 +58,4 @@ letterCount = countsAbove1 . foldr accum mempty
     accum letter = M.insertWith (+) letter 1
 
 boxIds :: IO [String]
-boxIds = fromFile "resources/day2-box-ids.txt"
+boxIds = fromFile "resources/day-2-box-ids.txt"
