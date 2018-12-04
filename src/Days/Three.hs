@@ -1,7 +1,9 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards   #-}
 
-module Days.Three (solution1) where
+module Days.Three
+  ( solution1
+  ) where
 
 import           Data.Attoparsec.Combinator (sepBy)
 import qualified Data.Attoparsec.Text       as A
@@ -18,34 +20,23 @@ data Claim = Claim
   , height :: Int
   } deriving (Eq, Show)
 
-data Coord = Coord
-  { x :: Int
-  , y :: Int
-  } deriving (Eq, Ord, Show)
+type Coord = (Int, Int)
 
 solution1 :: IO (Either String Int)
-solution1 = parseArea <$> fromFile
-
-parseArea :: T.Text -> Either String Int
-parseArea input = overlappingArea <$> A.parseOnly claims input
+solution1 = (fmap overlappingArea . A.parseOnly claims) <$> fromFile
 
 overlappingArea :: [Claim] -> Int
 overlappingArea =
-  M.size . M.filter (> 1) . foldr (combineCounts . coordCounts . toCoords) mempty
+  M.size . M.filter (> 1) . foldr (M.unionWith (+) . counts . toCoords) mempty
 
-combineCounts :: M.Map Coord Int -> M.Map Coord Int -> M.Map Coord Int
-combineCounts = M.unionWith (+)
-
-coordCounts :: [Coord] -> M.Map Coord Int
-coordCounts = foldr accum mempty
-  where
-    accum coord = M.insertWith (+) coord 1
+counts :: [Coord] -> M.Map Coord Int
+counts = foldr (\coord -> M.insertWith (+) coord 1) mempty
 
 toCoords :: Claim -> [Coord]
 toCoords Claim {..} =
-  [ Coord x' y'
-  | x' <- [(left + 1) .. (left + width)]
-  , y' <- [(top + 1) .. (top + height)]
+  [ (x, y)
+  | x <- [(left + 1) .. (left + width)]
+  , y <- [(top + 1) .. (top + height)]
   ]
 
 claims :: A.Parser [Claim]
